@@ -10,6 +10,13 @@ const KEY_DOWN = 40;
 const KEY_RETURN = 13;
 const KEY_ENTER = 14;
 const KEY_ESCAPE = 27;
+const KEY_TAB = 9;
+
+const completeKeyMap = {
+  tab: KEY_TAB,
+  enter: KEY_ENTER,
+  return: KEY_RETURN,
+};
 
 const OPTION_LIST_Y_OFFSET = 10;
 const OPTION_LIST_MIN_WIDTH = 100;
@@ -37,6 +44,7 @@ const propTypes = {
   value: PropTypes.string,
   offsetX: PropTypes.number,
   offsetY: PropTypes.number,
+  completeKey: PropTypes.string,
 };
 
 const defaultProps = {
@@ -59,6 +67,7 @@ const defaultProps = {
   offsetX: 0,
   offsetY: 0,
   value: null,
+  completeKey: 'enter',
 };
 
 class AutocompleteTextField extends React.Component {
@@ -75,6 +84,7 @@ class AutocompleteTextField extends React.Component {
     this.updateHelper = this.updateHelper.bind(this);
     this.resetHelper = this.resetHelper.bind(this);
     this.renderAutocompleteList = this.renderAutocompleteList.bind(this);
+    this.completeKeyToUse = completeKeyMap[props.completeKey] || 'enter';
 
     this.state = {
       helperVisible: false,
@@ -240,7 +250,7 @@ class AutocompleteTextField extends React.Component {
 
   handleKeyDown(event) {
     const { helperVisible, options, selection } = this.state;
-    const { onKeyDown } = this.props;
+    const { onKeyDown, completeKey } = this.props;
 
     if (helperVisible) {
       switch (event.keyCode) {
@@ -258,9 +268,17 @@ class AutocompleteTextField extends React.Component {
           break;
         case KEY_ENTER:
         case KEY_RETURN:
-          event.preventDefault();
-          this.handleSelection(selection);
-          break;
+          if (this.completeKeyToUse == KEY_ENTER || this.completeKeyToUse == KEY_RETURN) {
+            event.preventDefault();
+            this.handleSelection(selection);
+            break;
+          }
+        case KEY_TAB:
+          if (this.completeKeyToUse == KEY_TAB) {
+            event.preventDefault();
+            this.handleSelection(selection);
+            break;
+          }
         default:
           onKeyDown(event);
           break;
@@ -409,6 +427,7 @@ class AutocompleteTextField extends React.Component {
       disabled,
       onBlur,
       value,
+      completeKey,
       ...rest
     } = this.props;
 
