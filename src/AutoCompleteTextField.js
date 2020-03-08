@@ -250,7 +250,7 @@ class AutocompleteTextField extends React.Component {
 
   handleKeyDown(event) {
     const { helperVisible, options, selection } = this.state;
-    const { onKeyDown, completeKey } = this.props;
+    const { onKeyDown } = this.props;
 
     if (helperVisible) {
       switch (event.keyCode) {
@@ -268,17 +268,19 @@ class AutocompleteTextField extends React.Component {
           break;
         case KEY_ENTER:
         case KEY_RETURN:
-          if (this.completeKeyToUse == KEY_ENTER || this.completeKeyToUse == KEY_RETURN) {
+          if (this.completeKeyToUse === KEY_ENTER || this.completeKeyToUse === KEY_RETURN) {
             event.preventDefault();
             this.handleSelection(selection);
             break;
           }
         case KEY_TAB:
-          if (this.completeKeyToUse == KEY_TAB) {
+          if (this.completeKeyToUse === KEY_TAB) {
             event.preventDefault();
             this.handleSelection(selection);
-            break;
+          } else {
+            onKeyDown(event);
           }
+          break;
         default:
           onKeyDown(event);
           break;
